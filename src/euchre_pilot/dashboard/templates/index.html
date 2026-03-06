@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euchre Pilot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 2rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #fff; }
+        .subtitle { color: #888; margin-bottom: 2rem; }
+        .stats { display: flex; gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 1.2rem 1.5rem; min-width: 150px; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #4fc3f7; }
+        .stat-label { font-size: 0.85rem; color: #888; margin-top: 0.3rem; }
+        table { width: 100%; border-collapse: collapse; background: #1a1a1a; border-radius: 8px; overflow: hidden; }
+        th { text-align: left; padding: 0.8rem 1rem; background: #222; color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 0.7rem 1rem; border-top: 1px solid #2a2a2a; }
+        tr:hover td { background: #222; }
+        .win { color: #66bb6a; }
+        .loss { color: #ef5350; }
+        .score { font-family: monospace; font-size: 1rem; }
+        a { color: #4fc3f7; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Euchre Pilot</h1>
+    <p class="subtitle">Game history and analysis dashboard</p>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value">{{ game_count }}</div>
+            <div class="stat-label">Games Played</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ "%.0f"|format(win_rate * 100) }}%</div>
+            <div class="stat-label">Win Rate</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Game</th>
+                <th>Score</th>
+                <th>Result</th>
+                <th>Source</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr>
+                <td><a href="/api/games/{{ game.id }}/hands">#{{ game.id }}</a></td>
+                <td class="score">{{ game.score_team_0 }} - {{ game.score_team_1 }}</td>
+                <td>
+                    {% if game.winner == 0 %}
+                        <span class="win">Win</span>
+                    {% elif game.winner == 1 %}
+                        <span class="loss">Loss</span>
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>{{ game.source or 'engine' }}</td>
+                <td>{{ game.started_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
